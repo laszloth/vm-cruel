@@ -25,7 +25,9 @@ void get_proc_page_data(int pid, unsigned long vm_address, uint64_t *data, unsig
     }
 
     pagesize = getpagesize();
+    /* dist. from page boundary */
     *distance = vm_address % pagesize;
+    /* page index * data entry size */
     offset = vm_address / pagesize * 8;
 
     lsret = lseek(fd, offset, SEEK_SET);
@@ -128,6 +130,7 @@ int main(int argc, char **argv) {
     vm_addr = strtoul(argv[2], NULL, 0);
 
     get_proc_page_data(pid, vm_addr, &data, &dist);
+    /* Bits 0-54  page frame number (PFN) if present */
     pfn = data & 0x7FFFFFFFFFFFFF;
     ph_addr = (pfn << PAGE_SHIFT) + dist;
 
